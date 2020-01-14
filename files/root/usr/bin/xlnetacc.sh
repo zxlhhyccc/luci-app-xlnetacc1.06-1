@@ -91,6 +91,7 @@ clean_log() {
 
 # 获取接口IP地址
 get_bind_ip() {
+	network=$(uci get "xlnetacc.general.network" 2> /dev/null)
 	json_cleanup; json_load "$(ubus call network.interface.$network status 2> /dev/null)" >/dev/null 2>&1
 	json_select "ipv4-address" >/dev/null 2>&1; json_select 1 >/dev/null 2>&1
 	json_get_var _bind_ip "address"
@@ -551,7 +552,7 @@ xlnetacc_var() {
 
 # 重试循环
 xlnetacc_retry() {
-	if [ $# -ge 3 ];then
+	if [ $# -ge 3 ]; then
 		if [ $3 -ne 0 ]; then
 			[ $2 -eq 1 -a $down_acc -ne $3 ] && return 0
 			[ $2 -eq 2 -a $up_acc -ne $3 ] && return 0
@@ -600,8 +601,8 @@ xlnetacc_init() {
 
 	# 防止重复启动
 	local pid
-	for pid in $(pidof "${0##*/}"); do
-		[ $pid -ne $$ ] && return 1
+	for pid in $(ps | grep "${0##*/}" | grep -v grep | awk '{print $1}' &); do
+		[ "$pid" != "$$" ] && return 1
 	done
 
 	# 读取设置
