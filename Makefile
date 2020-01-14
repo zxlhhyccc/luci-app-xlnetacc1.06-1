@@ -42,7 +42,7 @@ exit 0
 endef
 
 define Package/$(PKG_NAME)/conffiles
-	/etc/config/xlnetacc
+/etc/config/xlnetacc
 endef
 
 define Package/$(PKG_NAME)/install
